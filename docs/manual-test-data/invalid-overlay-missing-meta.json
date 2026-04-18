@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "overlayId": "ovl_manual_invalid_001",
+  "name": "Invalid Upload Sample",
+  "platform": "windows",
+  "canvas": {
+    "baseWidth": 1920,
+    "baseHeight": 1080
+  },
+  "overlaySettings": {
+    "opacity": 0.85
+  },
+  "elements": []
+}
