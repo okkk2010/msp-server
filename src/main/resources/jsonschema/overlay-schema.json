@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "overlayId",
+    "name",
+    "platform",
+    "canvas",
+    "overlaySettings",
+    "elements",
+    "meta"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "overlayId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "windows",
+        "android"
+      ]
+    },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseWidth",
+        "baseHeight"
+      ],
+      "properties": {
+        "baseWidth": {
+          "type": "number"
+        },
+        "baseHeight": {
+          "type": "number"
+        }
+      }
+    },
+    "overlaySettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opacity"
+      ],
+      "properties": {
+        "opacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "elements": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/rectElement"
+          },
+          {
+            "$ref": "#/$defs/circleElement"
+          },
+          {
+            "$ref": "#/$defs/lineElement"
+          }
+        ]
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rectElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "x",
+        "y",
+        "width",
+        "height",
+        "rotation",
+        "opacity",
+        "zIndex",
+        "visible",
+        "locked",
+        "fillColor",
+        "strokeColor",
+        "strokeWidth",
+        "cornerRadius"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "const": "rect"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "rotation": {
+          "type": "number"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "zIndex": {
+          "type": "integer"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "fillColor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strokeColor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strokeWidth": {
+          "type": "number"
+        },
+        "cornerRadius": {
+          "type": "number"
+        }
+      }
+    },
+    "circleElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "x",
+        "y",
+        "width",
+        "height",
+        "rotation",
+        "opacity",
+        "zIndex",
+        "visible",
+        "locked",
+        "fillColor",
+        "strokeColor",
+        "strokeWidth"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "const": "circle"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "rotation": {
+          "type": "number"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "zIndex": {
+          "type": "integer"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "fillColor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strokeColor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strokeWidth": {
+          "type": "number"
+        }
+      }
+    },
+    "lineElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        "opacity",
+        "zIndex",
+        "visible",
+        "locked",
+        "strokeColor",
+        "strokeWidth",
+        "dashStyle"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "const": "line"
+        },
+        "x1": {
+          "type": "number"
+        },
+        "y1": {
+          "type": "number"
+        },
+        "x2": {
+          "type": "number"
+        },
+        "y2": {
+          "type": "number"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "zIndex": {
+          "type": "integer"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "strokeColor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "strokeWidth": {
+          "type": "number"
+        },
+        "dashStyle": {
+          "type": "string",
+          "enum": [
+            "solid",
+            "dash",
+            "dot"
+          ]
+        }
+      }
+    }
+  }
+}
