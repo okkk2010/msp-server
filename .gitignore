@@ -7,4 +7,4 @@ out/
 bin/
 .env
 src/main/resources/application-local.yml
-storage/
+/storage/
