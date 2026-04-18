@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: msp-overlay-server
+
+server:
+  port: 8080
+
