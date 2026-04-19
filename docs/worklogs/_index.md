@@ -9,3 +9,4 @@
 - `2026-04-19_backend-step6-google-oauth-jwt.md`: Google OAuth 로그인과 JWT 인증/Refresh Token 흐름 구성
 - `2026-04-19_backend-step7-overlay-json-schema-validation.md`: overlay.json JSON Schema 검증기와 단위 테스트 추가
 - `2026-04-19_backend-step8-multipart-upload.md`: multipart 업로드 API, 로컬 파일 저장, 업로드 통합 테스트 추가
+- `2026-04-19_gitignore-fix.md`: `.gitignore` 누락 규칙 보완 및 이미 추적 중이던 로컬 산출물 인덱스 제외
