@@ -1,6 +1,8 @@
 package com.mspoverlay.domain.auth;
 
 import java.net.URI;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +18,7 @@ import jakarta.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "Authentication and token APIs")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,6 +28,7 @@ public class AuthController {
     }
 
     @GetMapping("/google")
+    @Operation(summary = "Start Google OAuth login")
     public ResponseEntity<Void> googleLogin() {
         return ResponseEntity.status(302)
                 .location(URI.create("/oauth2/authorization/google"))
@@ -32,16 +36,19 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "Get current authenticated user")
     public ApiResponse<MeResponse> me(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         return ApiResponse.ok(authService.getCurrentUser(authenticatedUser.userId()));
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh access token with refresh token")
     public ApiResponse<AuthTokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return ApiResponse.ok(authService.refresh(request.refreshToken()));
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout current user and delete refresh tokens")
     public ApiResponse<Void> logout(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         authService.logout(authenticatedUser.userId());
         return ApiResponse.ok();

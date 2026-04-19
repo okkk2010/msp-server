@@ -3,6 +3,8 @@ package com.mspoverlay.domain.overlay;
 import com.mspoverlay.global.response.ApiResponse;
 import com.mspoverlay.global.response.PageResponse;
 import com.mspoverlay.global.security.AuthenticatedUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequestMapping("/api/overlays")
+@Tag(name = "Overlay", description = "Overlay upload, query, update and delete APIs")
 public class OverlayController {
 
     private final OverlayUploadService overlayUploadService;
@@ -39,6 +42,7 @@ public class OverlayController {
     }
 
     @GetMapping
+    @Operation(summary = "Get paged overlay list")
     public ApiResponse<PageResponse<OverlaySummaryResponse>> getOverlays(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,
@@ -52,11 +56,13 @@ public class OverlayController {
     }
 
     @GetMapping("/{overlayId}")
+    @Operation(summary = "Get overlay detail by overlayId")
     public ApiResponse<OverlayDetailResponse> getOverlayDetail(@PathVariable String overlayId) {
         return ApiResponse.ok(overlayQueryService.getOverlayDetail(overlayId));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload overlay files and metadata")
     public ResponseEntity<ApiResponse<OverlayUploadResponse>> upload(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @Valid @ModelAttribute OverlayUploadRequest request
@@ -66,6 +72,7 @@ public class OverlayController {
     }
 
     @PatchMapping(value = "/{overlayId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update overlay metadata or files")
     public ApiResponse<OverlayUploadResponse> update(
             @PathVariable String overlayId,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
@@ -75,6 +82,7 @@ public class OverlayController {
     }
 
     @DeleteMapping("/{overlayId}")
+    @Operation(summary = "Delete overlay and stored files")
     public ApiResponse<Void> delete(
             @PathVariable String overlayId,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser

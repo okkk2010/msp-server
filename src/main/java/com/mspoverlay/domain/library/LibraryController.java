@@ -1,6 +1,8 @@
 package com.mspoverlay.domain.library;
 
 import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("/api/library")
+@Tag(name = "Library", description = "User library APIs")
 public class LibraryController {
 
     private final LibraryService libraryService;
@@ -26,11 +29,13 @@ public class LibraryController {
     }
 
     @GetMapping
+    @Operation(summary = "Get current user's saved overlays")
     public ApiResponse<List<LibraryItemResponse>> getLibrary(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         return ApiResponse.ok(libraryService.getLibrary(authenticatedUser.userId()));
     }
 
     @PostMapping
+    @Operation(summary = "Save overlay to current user's library")
     public ApiResponse<Void> save(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @Valid @RequestBody LibrarySaveRequest request
@@ -40,6 +45,7 @@ public class LibraryController {
     }
 
     @DeleteMapping("/{overlayId}")
+    @Operation(summary = "Delete overlay from current user's library")
     public ApiResponse<Void> delete(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @PathVariable Long overlayId
