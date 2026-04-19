@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "overlayId": "ovl_front_dashboard_001",
+  "name": "Frontend Dashboard Sample",
+  "platform": "windows",
+  "game": {
+    "id": "minecraft",
+    "name": "Minecraft"
+  },
+  "canvas": {
+    "baseWidth": 1920,
+    "baseHeight": 1080
+  },
+  "overlaySettings": {
+    "opacity": 0.92
+  },
+  "elements": [
+    {
+      "id": "panel-top-left",
+      "type": "rect",
+      "x": 48,
+      "y": 40,
+      "width": 420,
+      "height": 180,
+      "rotation": 0,
+      "opacity": 0.88,
+      "zIndex": 1,
+      "visible": true,
+      "locked": false,
+      "fillColor": "#101826",
+      "strokeColor": "#5eead4",
+      "strokeWidth": 3,
+      "cornerRadius": 20
+    },
+    {
+      "id": "panel-bottom-right",
+      "type": "rect",
+      "x": 1390,
+      "y": 820,
+      "width": 460,
+      "height": 200,
+      "rotation": 0,
+      "opacity": 0.82,
+      "zIndex": 2,
+      "visible": true,
+      "locked": false,
+      "fillColor": "#1f2937",
+      "strokeColor": "#f59e0b",
+      "strokeWidth": 2,
+      "cornerRadius": 24
+    },
+    {
+      "id": "status-circle",
+      "type": "circle",
+      "x": 1640,
+      "y": 120,
+      "width": 120,
+      "height": 120,
+      "rotation": 0,
+      "opacity": 0.95,
+      "zIndex": 3,
+      "visible": true,
+      "locked": false,
+      "fillColor": "#22c55e",
+      "strokeColor": "#dcfce7",
+      "strokeWidth": 6
+    },
+    {
+      "id": "focus-line-horizontal",
+      "type": "line",
+      "x1": 540,
+      "y1": 540,
+      "x2": 1380,
+      "y2": 540,
+      "opacity": 0.72,
+      "zIndex": 4,
+      "visible": true,
+      "locked": false,
+      "strokeColor": "#38bdf8",
+      "strokeWidth": 6,
+      "dashStyle": "dash"
+    },
+    {
+      "id": "focus-line-vertical",
+      "type": "line",
+      "x1": 960,
+      "y1": 220,
+      "x2": 960,
+      "y2": 860,
+      "opacity": 0.72,
+      "zIndex": 5,
+      "visible": true,
+      "locked": false,
+      "strokeColor": "#38bdf8",
+      "strokeWidth": 6,
+      "dashStyle": "dash"
+    }
+  ],
+  "meta": {
+    "createdAt": "2026-04-19T04:10:00+09:00",
+    "updatedAt": "2026-04-19T04:10:00+09:00"
+  }
+}

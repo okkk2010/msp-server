@@ -73,6 +73,52 @@ public class OverlayStorageService {
         }
     }
 
+    public StoredOverlayFiles replace(
+            String overlayId,
+            MultipartFile overlayJson,
+            MultipartFile thumbnail,
+            String currentJsonPath,
+            String currentThumbnailPath
+    ) {
+        validateOverlayDirectory(overlayId);
+
+        Path overlayDirectory = storageRoot.resolve(OVERLAYS_DIRECTORY).resolve(overlayId).normalize();
+        ensureWithinStorageRoot(overlayDirectory);
+
+        try {
+            Files.createDirectories(overlayDirectory);
+
+            Path jsonFilePath = overlayDirectory.resolve(JSON_FILE_NAME);
+            Path thumbnailFilePath = overlayDirectory.resolve(THUMBNAIL_FILE_NAME);
+
+            if (overlayJson != null && !overlayJson.isEmpty()) {
+                validateOverlayJsonFile(overlayJson);
+                copy(overlayJson, jsonFilePath);
+            }
+            if (thumbnail != null && !thumbnail.isEmpty()) {
+                validateThumbnailFile(thumbnail);
+                copy(thumbnail, thumbnailFilePath);
+            }
+
+            return new StoredOverlayFiles(
+                    currentJsonPath != null ? currentJsonPath : "/storage/overlays/%s/%s".formatted(overlayId, JSON_FILE_NAME),
+                    currentThumbnailPath != null ? currentThumbnailPath : "/storage/overlays/%s/%s".formatted(overlayId, THUMBNAIL_FILE_NAME),
+                    overlayDirectory,
+                    jsonFilePath,
+                    thumbnailFilePath
+            );
+        } catch (IOException exception) {
+            throw new BusinessException(ErrorCode.FILE_SAVE_FAILED, "오버레이 파일 저장에 실패했습니다.");
+        }
+    }
+
+    public void deleteOverlayDirectory(String overlayId) {
+        validateOverlayDirectory(overlayId);
+        Path overlayDirectory = storageRoot.resolve(OVERLAYS_DIRECTORY).resolve(overlayId).normalize();
+        ensureWithinStorageRoot(overlayDirectory);
+        deleteDirectory(overlayDirectory);
+    }
+
     private void copy(MultipartFile source, Path target) throws IOException {
         try (InputStream inputStream = source.getInputStream()) {
             Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);

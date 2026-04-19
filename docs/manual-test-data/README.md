@@ -9,8 +9,11 @@
 ## 샘플 파일
 
 - `valid-overlay.json`
+- `frontend-overlay-dashboard.json`
 - `invalid-overlay-missing-meta.json`
 - `thumbnail.png`
+
+`frontend-overlay-dashboard.json`은 프론트 렌더링 확인용 샘플로, `rect`, `circle`, `line` 요소를 모두 포함한다.
 
 ## 업로드 성공 테스트
 

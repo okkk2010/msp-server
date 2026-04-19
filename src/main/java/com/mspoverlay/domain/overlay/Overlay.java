@@ -110,4 +110,30 @@ public class Overlay extends BaseTimeEntity {
     public void updateGame(Game game) {
         this.game = game;
     }
+
+    public void update(
+            String name,
+            String description,
+            Platform platform,
+            Game game,
+            String code,
+            String schemaVersion,
+            Integer canvasBaseWidth,
+            Integer canvasBaseHeight,
+            BigDecimal opacity,
+            String jsonPath,
+            String thumbnailPath
+    ) {
+        this.name = name;
+        this.description = description;
+        this.platform = platform;
+        this.game = game;
+        this.code = code;
+        this.schemaVersion = schemaVersion;
+        this.canvasBaseWidth = canvasBaseWidth;
+        this.canvasBaseHeight = canvasBaseHeight;
+        this.opacity = opacity;
+        this.jsonPath = jsonPath;
+        this.thumbnailPath = thumbnailPath;
+    }
 }
