@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력 오류"),
+    INVALID_OVERLAY_CODE(HttpStatus.BAD_REQUEST, "overlay code must be 6 uppercase letters or digits"),
     INVALID_MULTIPART_REQUEST(HttpStatus.BAD_REQUEST, "multipart 요청 오류"),
     INVALID_OVERLAY_JSON(HttpStatus.BAD_REQUEST, "overlay.json 검증 실패"),
     INVALID_THUMBNAIL_FILE(HttpStatus.BAD_REQUEST, "썸네일 오류"),
@@ -17,6 +18,7 @@ public enum ErrorCode {
     PLATFORM_NOT_FOUND(HttpStatus.NOT_FOUND, "플랫폼을 찾을 수 없습니다."),
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "게임을 찾을 수 없습니다."),
     OVERLAY_NOT_FOUND(HttpStatus.NOT_FOUND, "오버레이를 찾을 수 없습니다."),
+    OVERLAY_JSON_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "overlay json not found"),
     LIBRARY_NOT_FOUND(HttpStatus.NOT_FOUND, "라이브러리를 찾을 수 없습니다."),
     OVERLAY_CODE_DUPLICATED(HttpStatus.CONFLICT, "오버레이 코드가 이미 존재합니다."),
     OVERLAY_ALREADY_SAVED(HttpStatus.CONFLICT, "이미 저장된 오버레이입니다."),

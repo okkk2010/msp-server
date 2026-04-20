@@ -12,6 +12,9 @@ public interface OverlayRepository extends JpaRepository<Overlay, Long>, JpaSpec
     @EntityGraph(attributePaths = {"platform", "game", "authorUser"})
     Optional<Overlay> findWithDetailsByOverlayId(String overlayId);
 
+    @EntityGraph(attributePaths = {"platform", "game", "authorUser"})
+    Optional<Overlay> findWithDetailsByCode(String code);
+
     Optional<Overlay> findByCode(String code);
 
     boolean existsByCode(String code);

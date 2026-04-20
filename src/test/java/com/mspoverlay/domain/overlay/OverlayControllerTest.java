@@ -8,7 +8,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mspoverlay.global.response.PageResponse;
+import com.mspoverlay.global.exception.BusinessException;
+import com.mspoverlay.global.exception.ErrorCode;
+import com.mspoverlay.global.exception.GlobalExceptionHandler;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,6 +96,65 @@ class OverlayControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.overlayId").value("ovl_front_dashboard_001"))
                 .andExpect(jsonPath("$.data.author.email").value("front-demo@example.com"));
+    }
+
+    @Test
+    void getOverlayByCode_returnsOverlayJsonPayload() throws Exception {
+        OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
+        OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
+        OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(overlayQueryService.getOverlayByCode(eq("abc123")))
+                .thenReturn(new OverlayCodeLoadResponse(
+                        1L,
+                        "ovl_front_dashboard_001",
+                        "ABC123",
+                        "Frontend Dashboard Sample",
+                        "Temporary seed data",
+                        new OverlayCodeLoadPlatformResponse(1L, "Windows", "windows"),
+                        new OverlayCodeLoadGameResponse(10L, "minecraft", "Minecraft"),
+                        "/storage/overlays/ovl_front_dashboard_001/thumbnail.png",
+                        "1.0.0",
+                        objectMapper.readTree("""
+                                {
+                                  "schemaVersion": "1.0.0",
+                                  "overlayId": "ovl_front_dashboard_001",
+                                  "name": "Frontend Dashboard Sample"
+                                }
+                                """),
+                        OffsetDateTime.parse("2026-04-19T12:00:00+09:00"),
+                        OffsetDateTime.parse("2026-04-19T12:10:00+09:00")
+                ));
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
+                new OverlayController(overlayUploadService, overlayQueryService, overlayCommandService)
+        ).build();
+
+        mockMvc.perform(get("/api/overlays/code/abc123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.code").value("ABC123"))
+                .andExpect(jsonPath("$.data.platform.slug").value("windows"))
+                .andExpect(jsonPath("$.data.game.displayName").value("Minecraft"))
+                .andExpect(jsonPath("$.data.overlayJson.overlayId").value("ovl_front_dashboard_001"));
+    }
+
+    @Test
+    void getOverlayByCode_returnsBadRequestWhenCodeIsInvalid() throws Exception {
+        OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
+        OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
+        OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
+        when(overlayQueryService.getOverlayByCode(eq("ab-12")))
+                .thenThrow(new BusinessException(ErrorCode.INVALID_OVERLAY_CODE));
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
+                new OverlayController(overlayUploadService, overlayQueryService, overlayCommandService)
+        ).setControllerAdvice(new GlobalExceptionHandler()).build();
+
+        mockMvc.perform(get("/api/overlays/code/ab-12"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.code").value("INVALID_OVERLAY_CODE"));
     }
 
     @Test

@@ -61,6 +61,12 @@ public class OverlayController {
         return ApiResponse.ok(overlayQueryService.getOverlayDetail(overlayId));
     }
 
+    @GetMapping("/code/{code}")
+    @Operation(summary = "Get overlay by share code")
+    public ApiResponse<OverlayCodeLoadResponse> getOverlayByCode(@PathVariable String code) {
+        return ApiResponse.ok(overlayQueryService.getOverlayByCode(code));
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload overlay files and metadata")
     public ResponseEntity<ApiResponse<OverlayUploadResponse>> upload(

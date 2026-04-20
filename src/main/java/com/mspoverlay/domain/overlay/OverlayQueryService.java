@@ -1,13 +1,18 @@
 package com.mspoverlay.domain.overlay;
 
+import java.util.regex.Pattern;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mspoverlay.global.exception.BusinessException;
 import com.mspoverlay.global.exception.ErrorCode;
 import com.mspoverlay.global.response.PageResponse;
+import com.mspoverlay.infrastructure.storage.OverlayStorageService;
 import jakarta.persistence.criteria.JoinType;
 
 @Service
@@ -17,11 +22,20 @@ public class OverlayQueryService {
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
     private static final int MAX_SIZE = 100;
+    private static final Pattern OVERLAY_CODE_PATTERN = Pattern.compile("^[A-Z0-9]{6}$");
 
     private final OverlayRepository overlayRepository;
+    private final OverlayStorageService overlayStorageService;
+    private final ObjectMapper objectMapper;
 
-    public OverlayQueryService(OverlayRepository overlayRepository) {
+    public OverlayQueryService(
+            OverlayRepository overlayRepository,
+            OverlayStorageService overlayStorageService,
+            ObjectMapper objectMapper
+    ) {
         this.overlayRepository = overlayRepository;
+        this.overlayStorageService = overlayStorageService;
+        this.objectMapper = objectMapper;
     }
 
     public PageResponse<OverlaySummaryResponse> getOverlays(
@@ -56,6 +70,14 @@ public class OverlayQueryService {
         return overlayRepository.findWithDetailsByOverlayId(overlayId)
                 .map(OverlayDetailResponse::from)
                 .orElseThrow(() -> new BusinessException(ErrorCode.OVERLAY_NOT_FOUND));
+    }
+
+    public OverlayCodeLoadResponse getOverlayByCode(String code) {
+        String normalizedCode = normalizeOverlayCode(code);
+        Overlay overlay = overlayRepository.findWithDetailsByCode(normalizedCode)
+                .orElseThrow(() -> new BusinessException(ErrorCode.OVERLAY_NOT_FOUND, "overlay not found"));
+        JsonNode overlayJson = readOverlayJson(overlay.getJsonPath());
+        return OverlayCodeLoadResponse.from(overlay, overlayJson);
     }
 
     private int normalizePage(Integer page) {
@@ -135,5 +157,25 @@ public class OverlayQueryService {
 
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(criteriaBuilder.upper(root.get("code")), code.trim().toUpperCase());
+    }
+
+    private String normalizeOverlayCode(String code) {
+        if (code == null) {
+            throw new BusinessException(ErrorCode.INVALID_OVERLAY_CODE);
+        }
+
+        String normalizedCode = code.trim().toUpperCase();
+        if (!OVERLAY_CODE_PATTERN.matcher(normalizedCode).matches()) {
+            throw new BusinessException(ErrorCode.INVALID_OVERLAY_CODE);
+        }
+        return normalizedCode;
+    }
+
+    private JsonNode readOverlayJson(String jsonPath) {
+        try {
+            return objectMapper.readTree(overlayStorageService.readOverlayJson(jsonPath));
+        } catch (JsonProcessingException exception) {
+            throw new BusinessException(ErrorCode.OVERLAY_JSON_NOT_FOUND);
+        }
     }
 }

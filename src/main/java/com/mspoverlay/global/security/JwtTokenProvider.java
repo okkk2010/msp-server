@@ -1,6 +1,8 @@
 package com.mspoverlay.global.security;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -56,10 +58,25 @@ public class JwtTokenProvider {
     }
 
     private SecretKey createSigningKey(String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("JWT secret must not be blank");
+        }
         try {
             return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
         } catch (RuntimeException exception) {
-            return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            byte[] rawSecret = secret.getBytes(StandardCharsets.UTF_8);
+            if (rawSecret.length >= 32) {
+                return Keys.hmacShaKeyFor(rawSecret);
+            }
+            return Keys.hmacShaKeyFor(sha256(rawSecret));
+        }
+    }
+
+    private byte[] sha256(byte[] value) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value);
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 algorithm is not available", exception);
         }
     }
 }

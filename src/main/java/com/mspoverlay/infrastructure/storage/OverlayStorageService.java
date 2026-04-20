@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -117,6 +118,26 @@ public class OverlayStorageService {
         Path overlayDirectory = storageRoot.resolve(OVERLAYS_DIRECTORY).resolve(overlayId).normalize();
         ensureWithinStorageRoot(overlayDirectory);
         deleteDirectory(overlayDirectory);
+    }
+
+    public String readOverlayJson(String jsonPath) {
+        if (jsonPath == null || jsonPath.isBlank() || !jsonPath.startsWith("/storage/")) {
+            throw new BusinessException(ErrorCode.OVERLAY_JSON_NOT_FOUND);
+        }
+
+        String relativePath = jsonPath.substring("/storage/".length());
+        Path targetPath = storageRoot.resolve(relativePath).normalize();
+        ensureWithinStorageRoot(targetPath);
+
+        if (Files.notExists(targetPath) || !Files.isRegularFile(targetPath)) {
+            throw new BusinessException(ErrorCode.OVERLAY_JSON_NOT_FOUND);
+        }
+
+        try {
+            return Files.readString(targetPath, StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            throw new BusinessException(ErrorCode.OVERLAY_JSON_NOT_FOUND);
+        }
     }
 
     private void copy(MultipartFile source, Path target) throws IOException {
