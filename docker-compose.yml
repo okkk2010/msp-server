@@ -4,9 +4,11 @@ services:
     container_name: msp-overlay-app
     env_file:
       - .env
+    ports:
+      - "8080:8080"
     depends_on:
       - postgres
-      
+
   postgres:
     image: postgres:16
     container_name: msp-overlay-postgres
