@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,10 +19,12 @@ import com.mspoverlay.global.exception.GlobalExceptionHandler;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(OutputCaptureExtension.class)
 class OverlayControllerTest {
 
     @Test
@@ -173,5 +178,27 @@ class OverlayControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.totalElements").value(0));
+    }
+
+    @Test
+    void getOverlayByCode_returnsInternalServerErrorAndLogsException(CapturedOutput output) throws Exception {
+        OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
+        OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
+        OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
+        when(overlayQueryService.getOverlayByCode(eq("abc123")))
+                .thenThrow(new RuntimeException("overlay query crashed"));
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
+                new OverlayController(overlayUploadService, overlayQueryService, overlayCommandService)
+        ).setControllerAdvice(new GlobalExceptionHandler()).build();
+
+        mockMvc.perform(get("/api/overlays/code/abc123"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"));
+
+        assertThat(output.getOut())
+                .contains("Unhandled exception on GET /api/overlays/code/abc123")
+                .contains("overlay query crashed");
     }
 }
