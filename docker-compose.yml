@@ -1,4 +1,12 @@
 services:
+  app:
+    build: .
+    container_name: msp-overlay-app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      
   postgres:
     image: postgres:16
     container_name: msp-overlay-postgres
