@@ -2,6 +2,8 @@ package com.mspoverlay.global.security;
 
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -57,8 +61,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException exception) {
+            log.warn("Expired JWT on {} {}: {}", request.getMethod(), request.getRequestURI(), exception.getMessage());
             commenceUnauthorized(request, response, ErrorCode.TOKEN_EXPIRED);
         } catch (JwtException | IllegalArgumentException exception) {
+            log.warn("Invalid JWT on {} {}: {}", request.getMethod(), request.getRequestURI(), exception.getMessage());
             commenceUnauthorized(request, response, ErrorCode.INVALID_TOKEN);
         }
     }

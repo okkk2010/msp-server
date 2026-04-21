@@ -1,6 +1,8 @@
 package com.mspoverlay.global.security;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     static final String ERROR_CODE_ATTRIBUTE = "auth_error_code";
+    private static final Logger log = LoggerFactory.getLogger(RestAuthenticationEntryPoint.class);
 
     private final ObjectMapper objectMapper;
 
@@ -33,6 +36,12 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         if (errorCode == null) {
             errorCode = ErrorCode.UNAUTHORIZED;
         }
+
+        log.warn("Unauthorized request on {} {} [{}]: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                errorCode.name(),
+                authException.getMessage());
 
         response.setStatus(errorCode.status().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
