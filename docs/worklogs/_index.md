@@ -1,5 +1,8 @@
 # Worklogs
 
+- `2026-05-06_fix-compose-env-file.md`: `.env` 없이 Docker Compose 명령이 실패하는 문제 수정
+- `2026-05-06_add-health-api.md`: API 테스트용 `GET /api/health` 엔드포인트 추가
+
 - `2026-04-21_add-local-1st-final-doc.md`: 서버 구현 기준 로컬 1차 완료 문서 추가
 - `2026-04-20_seed-windows-games.md`: Windows ?뚮옯?쇱슜 1?몄묶/3?몄묶 3D 寃뚯엫 ?쒕뱶 ?곗씠??異붽?
 - `2026-04-18_backend-step1-bootstrap.md`: Spring Boot ?熬곣뫁夷??釉띾콦 ??λた????諛댁뎽 ???リ옇???????뺟춯?뼿 ??뚮벣???怨뺣뼺?
