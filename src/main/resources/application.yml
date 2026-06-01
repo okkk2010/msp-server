@@ -26,6 +26,8 @@ app:
   cors:
     allowed-origins:
       - ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+    allowed-origin-patterns:
+      - ${CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*}
   frontend:
     origin: ${FRONTEND_ORIGIN:http://localhost:5173}
     login-callback-path: ${FRONTEND_LOGIN_CALLBACK_PATH:/login/callback}
