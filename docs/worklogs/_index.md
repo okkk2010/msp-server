@@ -1,7 +1,5 @@
 # Worklogs
 
-- `2026-06-01_allow-localhost-cors-patterns.md`: localhost 개발 origin을 CORS 패턴으로 허용
-
 - `2026-05-06_fix-compose-env-file.md`: `.env` 없이 Docker Compose 명령이 실패하는 문제 수정
 - `2026-05-06_add-health-api.md`: API 테스트용 `GET /api/health` 엔드포인트 추가
 
