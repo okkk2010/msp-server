@@ -50,9 +50,10 @@ class OverlayQueryServiceTest {
         OverlayCodeLoadResponse response = service.getOverlayByCode(" abc123 ");
 
         assertThat(response.code()).isEqualTo("ABC123");
-        assertThat(response.platform().slug()).isEqualTo("windows");
+        assertThat(response.platform()).isEqualTo("windows");
+        assertThat(response.platformInfo().slug()).isEqualTo("windows");
         assertThat(response.game().displayName()).isEqualTo("Minecraft");
-        assertThat(response.overlayJson().get("overlayId").asText()).isEqualTo("ovl_001");
+        assertThat(objectMapper.readTree(response.overlayJson()).get("overlayId").asText()).isEqualTo("ovl_001");
     }
 
     @Test

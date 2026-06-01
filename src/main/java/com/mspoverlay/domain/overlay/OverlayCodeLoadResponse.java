@@ -1,7 +1,6 @@
 package com.mspoverlay.domain.overlay;
 
 import java.time.OffsetDateTime;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public record OverlayCodeLoadResponse(
         Long id,
@@ -9,22 +8,24 @@ public record OverlayCodeLoadResponse(
         String code,
         String name,
         String description,
-        OverlayCodeLoadPlatformResponse platform,
+        String platform,
+        OverlayCodeLoadPlatformResponse platformInfo,
         OverlayCodeLoadGameResponse game,
         String thumbnailUrl,
         String schemaVersion,
-        JsonNode overlayJson,
+        String overlayJson,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
 
-    public static OverlayCodeLoadResponse from(Overlay overlay, JsonNode overlayJson) {
+    public static OverlayCodeLoadResponse from(Overlay overlay, String overlayJson) {
         return new OverlayCodeLoadResponse(
                 overlay.getId(),
                 overlay.getOverlayId(),
                 overlay.getCode(),
                 overlay.getName(),
                 overlay.getDescription(),
+                overlay.getPlatform().getSlug(),
                 OverlayCodeLoadPlatformResponse.from(overlay),
                 OverlayCodeLoadGameResponse.from(overlay),
                 overlay.getThumbnailPath(),

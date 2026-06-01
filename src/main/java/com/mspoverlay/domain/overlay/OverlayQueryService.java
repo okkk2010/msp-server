@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mspoverlay.global.exception.BusinessException;
 import com.mspoverlay.global.exception.ErrorCode;
@@ -76,7 +75,7 @@ public class OverlayQueryService {
         String normalizedCode = normalizeOverlayCode(code);
         Overlay overlay = overlayRepository.findWithDetailsByCode(normalizedCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.OVERLAY_NOT_FOUND, "overlay not found"));
-        JsonNode overlayJson = readOverlayJson(overlay.getJsonPath());
+        String overlayJson = readOverlayJson(overlay.getJsonPath());
         return OverlayCodeLoadResponse.from(overlay, overlayJson);
     }
 
@@ -171,9 +170,11 @@ public class OverlayQueryService {
         return normalizedCode;
     }
 
-    private JsonNode readOverlayJson(String jsonPath) {
+    private String readOverlayJson(String jsonPath) {
         try {
-            return objectMapper.readTree(overlayStorageService.readOverlayJson(jsonPath));
+            String overlayJson = overlayStorageService.readOverlayJson(jsonPath);
+            objectMapper.readTree(overlayJson);
+            return overlayJson;
         } catch (JsonProcessingException exception) {
             throw new BusinessException(ErrorCode.OVERLAY_JSON_NOT_FOUND);
         }

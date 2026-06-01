@@ -116,17 +116,18 @@ class OverlayControllerTest {
                         "ABC123",
                         "Frontend Dashboard Sample",
                         "Temporary seed data",
+                        "windows",
                         new OverlayCodeLoadPlatformResponse(1L, "Windows", "windows"),
                         new OverlayCodeLoadGameResponse(10L, "minecraft", "Minecraft"),
                         "/storage/overlays/ovl_front_dashboard_001/thumbnail.png",
                         "1.0.0",
-                        objectMapper.readTree("""
+                        objectMapper.writeValueAsString(objectMapper.readTree("""
                                 {
                                   "schemaVersion": "1.0.0",
                                   "overlayId": "ovl_front_dashboard_001",
                                   "name": "Frontend Dashboard Sample"
                                 }
-                                """),
+                                """)),
                         OffsetDateTime.parse("2026-04-19T12:00:00+09:00"),
                         OffsetDateTime.parse("2026-04-19T12:10:00+09:00")
                 ));
@@ -139,9 +140,11 @@ class OverlayControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.code").value("ABC123"))
-                .andExpect(jsonPath("$.data.platform.slug").value("windows"))
+                .andExpect(jsonPath("$.data.platform").value("windows"))
+                .andExpect(jsonPath("$.data.platformInfo.slug").value("windows"))
                 .andExpect(jsonPath("$.data.game.displayName").value("Minecraft"))
-                .andExpect(jsonPath("$.data.overlayJson.overlayId").value("ovl_front_dashboard_001"));
+                .andExpect(jsonPath("$.data.overlayJson").isString())
+                .andExpect(jsonPath("$.data.overlayJson").value(org.hamcrest.Matchers.containsString("\"overlayId\":\"ovl_front_dashboard_001\"")));
     }
 
     @Test
