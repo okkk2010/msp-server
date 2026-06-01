@@ -1,5 +1,7 @@
 # Worklogs
 
+- `2026-06-01_require-category-on-overlay-upload.md`: 오버레이 업로드 시 카테고리 필수 검증 추가
+
 - `2026-05-06_fix-compose-env-file.md`: `.env` 없이 Docker Compose 명령이 실패하는 문제 수정
 - `2026-05-06_add-health-api.md`: API 테스트용 `GET /api/health` 엔드포인트 추가
 

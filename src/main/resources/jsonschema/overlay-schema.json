@@ -7,6 +7,7 @@
     "overlayId",
     "name",
     "platform",
+    "game",
     "canvas",
     "overlaySettings",
     "elements",

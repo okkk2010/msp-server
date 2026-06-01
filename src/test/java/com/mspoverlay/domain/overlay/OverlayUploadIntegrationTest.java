@@ -81,7 +81,7 @@ class OverlayUploadIntegrationTest {
                 OAuthProvider.GOOGLE,
                 "google-user-1",
                 "user@example.com",
-                "테스트 사용자",
+                "Test User",
                 null
         ));
         accessToken = jwtTokenProvider.createAccessToken(
@@ -125,9 +125,10 @@ class OverlayUploadIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/overlays")
                         .file(overlayJson)
                         .file(thumbnail)
-                        .param("name", "업로드 테스트")
-                        .param("description", "설명")
+                        .param("name", "Upload Test")
+                        .param("description", "Description")
                         .param("platform", "windows")
+                        .param("gameId", "1")
                         .param("code", "ABC123")
                         .header(AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isCreated())
@@ -162,8 +163,9 @@ class OverlayUploadIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/overlays")
                         .file(overlayJson)
                         .file(thumbnail)
-                        .param("name", "업로드 테스트")
+                        .param("name", "Upload Test")
                         .param("platform", "windows")
+                        .param("gameId", "1")
                         .param("code", "DEF456")
                         .header(AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
@@ -172,6 +174,36 @@ class OverlayUploadIntegrationTest {
 
         assertThat(overlayRepository.findByCode("DEF456")).isEmpty();
         assertThat(Files.exists(STORAGE_ROOT.resolve("overlays/ovl_upload_002"))).isFalse();
+    }
+
+    @Test
+    void uploadOverlay_rejectsMissingCategory() throws Exception {
+        MockMultipartFile overlayJson = new MockMultipartFile(
+                "overlayJson",
+                "overlay.json",
+                "application/json",
+                validOverlayJson("ovl_upload_003").getBytes()
+        );
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "thumbnail.png",
+                "image/png",
+                pngBytes()
+        );
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/overlays")
+                        .file(overlayJson)
+                        .file(thumbnail)
+                        .param("name", "Upload Test")
+                        .param("platform", "windows")
+                        .param("code", "GHI789")
+                        .header(AUTHORIZATION, "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
+
+        assertThat(overlayRepository.findByCode("GHI789")).isEmpty();
+        assertThat(Files.exists(STORAGE_ROOT.resolve("overlays/ovl_upload_003"))).isFalse();
     }
 
     private static Path createStorageRoot() {
@@ -213,6 +245,10 @@ class OverlayUploadIntegrationTest {
                   "overlayId": "%s",
                   "name": "Manual Upload Sample",
                   "platform": "windows",
+                  "game": {
+                    "id": "1",
+                    "name": "VALORANT"
+                  },
                   "canvas": {
                     "baseWidth": 1920,
                     "baseHeight": 1080
@@ -254,6 +290,10 @@ class OverlayUploadIntegrationTest {
                   "overlayId": "%s",
                   "name": "Invalid Upload Sample",
                   "platform": "windows",
+                  "game": {
+                    "id": "1",
+                    "name": "VALORANT"
+                  },
                   "canvas": {
                     "baseWidth": 1920,
                     "baseHeight": 1080

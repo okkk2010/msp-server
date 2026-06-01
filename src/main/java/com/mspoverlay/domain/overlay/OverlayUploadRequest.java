@@ -19,6 +19,7 @@ public class OverlayUploadRequest {
     @NotBlank(message = "플랫폼은 필수입니다.")
     private String platform;
 
+    @NotNull(message = "카테고리는 필수입니다.")
     private Long gameId;
 
     @NotBlank(message = "코드는 필수입니다.")
