@@ -20,9 +20,14 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     private static final Logger log = LoggerFactory.getLogger(OAuth2LoginFailureHandler.class);
 
     private final FrontendProperties frontendProperties;
+    private final WindowsOAuthLoginSession windowsOAuthLoginSession;
 
-    public OAuth2LoginFailureHandler(FrontendProperties frontendProperties) {
+    public OAuth2LoginFailureHandler(
+            FrontendProperties frontendProperties,
+            WindowsOAuthLoginSession windowsOAuthLoginSession
+    ) {
         this.frontendProperties = frontendProperties;
+        this.windowsOAuthLoginSession = windowsOAuthLoginSession;
     }
 
     @Override
@@ -32,6 +37,17 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
             AuthenticationException exception
     ) throws IOException, ServletException {
         log.warn("OAuth2 login failed", exception);
+
+        var windowsLoginRequest = windowsOAuthLoginSession.consume(request);
+        if (windowsLoginRequest.isPresent()) {
+            var windowsLogin = windowsLoginRequest.get();
+            response.sendRedirect(UriComponentsBuilder.fromUriString(windowsLogin.callbackUrl())
+                    .queryParam("error", "oauth_login_failed")
+                    .queryParam("state", windowsLogin.state())
+                    .build(true)
+                    .toUriString());
+            return;
+        }
 
         response.sendRedirect(loginCallbackUri()
                 .queryParam("success", false)

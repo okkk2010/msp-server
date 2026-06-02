@@ -24,10 +24,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
     private final FrontendProperties frontendProperties;
+    private final WindowsOAuthLoginSession windowsOAuthLoginSession;
 
-    public OAuth2LoginSuccessHandler(AuthService authService, FrontendProperties frontendProperties) {
+    public OAuth2LoginSuccessHandler(
+            AuthService authService,
+            FrontendProperties frontendProperties,
+            WindowsOAuthLoginSession windowsOAuthLoginSession
+    ) {
         this.authService = authService;
         this.frontendProperties = frontendProperties;
+        this.windowsOAuthLoginSession = windowsOAuthLoginSession;
     }
 
     @Override
@@ -48,6 +54,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String picture = oAuth2User.getAttribute("picture");
 
         AuthTokenResponse authTokenResponse = authService.login(provider, providerUserId, email, name, picture);
+
+        var windowsLoginRequest = windowsOAuthLoginSession.consume(request);
+        if (windowsLoginRequest.isPresent()) {
+            var windowsLogin = windowsLoginRequest.get();
+            response.sendRedirect(UriComponentsBuilder.fromUriString(windowsLogin.callbackUrl())
+                    .queryParam("accessToken", authTokenResponse.accessToken())
+                    .queryParam("state", windowsLogin.state())
+                    .build(true)
+                    .toUriString());
+            return;
+        }
 
         response.sendRedirect(loginCallbackUri()
                 .queryParam("success", true)

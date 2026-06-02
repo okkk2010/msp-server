@@ -8,12 +8,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.mspoverlay.global.response.ApiResponse;
 import com.mspoverlay.global.security.AuthenticatedUser;
+import com.mspoverlay.infrastructure.oauth.WindowsOAuthLoginSession;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Validated
 @RestController
@@ -22,14 +25,33 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
+    private final WindowsOAuthLoginSession windowsOAuthLoginSession;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, WindowsOAuthLoginSession windowsOAuthLoginSession) {
         this.authService = authService;
+        this.windowsOAuthLoginSession = windowsOAuthLoginSession;
     }
 
     @GetMapping("/google")
     @Operation(summary = "Start Google OAuth login")
     public ResponseEntity<Void> googleLogin() {
+        return ResponseEntity.status(302)
+                .location(URI.create("/oauth2/authorization/google"))
+                .build();
+    }
+
+    @GetMapping("/windows/google/start")
+    @Operation(summary = "Start Google OAuth login for Windows client")
+    public ResponseEntity<Void> windowsGoogleLogin(
+            @RequestParam String callbackUrl,
+            @RequestParam String state,
+            HttpServletRequest request
+    ) {
+        if (!windowsOAuthLoginSession.isAllowedCallbackUrl(callbackUrl) || state == null || state.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        windowsOAuthLoginSession.save(request, callbackUrl, state);
         return ResponseEntity.status(302)
                 .location(URI.create("/oauth2/authorization/google"))
                 .build();
