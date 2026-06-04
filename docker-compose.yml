@@ -24,7 +24,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - app_storage:/app/storage
+      - app_storage:/storage
     depends_on:
       postgres:
         condition: service_healthy

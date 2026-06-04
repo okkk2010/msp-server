@@ -1,5 +1,7 @@
 ﻿# Worklogs
 
+- `2026-06-04_align-app-storage-volume-path.md`: Align app storage volume mount target with `/storage`
+
 - `2026-06-02_windows-google-oauth-bridge.md`: Windows client Google OAuth localhost callback bridge
 
 - `2026-06-01_require-category-on-overlay-upload.md`: ?ㅻ쾭?덉씠 ?낅줈????移댄뀒怨좊━ ?꾩닔 寃利?異붽?
