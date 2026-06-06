@@ -157,6 +157,12 @@
         "height": {
           "type": "number"
         },
+        "anchor": {
+          "$ref": "#/$defs/anchor"
+        },
+        "anchorSpace": {
+          "$ref": "#/$defs/anchorSpace"
+        },
         "rotation": {
           "type": "number"
         },
@@ -228,6 +234,12 @@
         },
         "height": {
           "type": "number"
+        },
+        "anchor": {
+          "$ref": "#/$defs/anchor"
+        },
+        "anchorSpace": {
+          "$ref": "#/$defs/anchorSpace"
         },
         "rotation": {
           "type": "number"
@@ -327,6 +339,27 @@
           ]
         }
       }
+    },
+    "anchor": {
+      "type": "string",
+      "enum": [
+        "top-left",
+        "top",
+        "top-right",
+        "left",
+        "center",
+        "right",
+        "bottom-left",
+        "bottom",
+        "bottom-right"
+      ]
+    },
+    "anchorSpace": {
+      "type": "string",
+      "enum": [
+        "safeFrame",
+        "screen"
+      ]
     }
   }
 }

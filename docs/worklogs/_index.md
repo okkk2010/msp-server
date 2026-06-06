@@ -1,5 +1,6 @@
 ﻿# Worklogs
 
+- `2026-06-06_add-overlay-anchor-schema.md`: Add overlay anchor metadata schema
 - `2026-06-06_android-google-oauth-bridge.md`: Android client Google OAuth deep link bridge
 - `2026-06-06_seed-android-games.md`: Seed Android game categories
 
