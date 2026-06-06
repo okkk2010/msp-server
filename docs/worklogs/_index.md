@@ -1,5 +1,7 @@
 ﻿# Worklogs
 
+- `2026-06-06_seed-android-games.md`: Seed Android game categories
+
 - `2026-06-04_align-app-storage-volume-path.md`: Align app storage volume mount target with `/storage`
 
 - `2026-06-02_windows-google-oauth-bridge.md`: Windows client Google OAuth localhost callback bridge
