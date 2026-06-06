@@ -1,5 +1,6 @@
 ﻿# Worklogs
 
+- `2026-06-06_android-google-oauth-bridge.md`: Android client Google OAuth deep link bridge
 - `2026-06-06_seed-android-games.md`: Seed Android game categories
 
 - `2026-06-04_align-app-storage-volume-path.md`: Align app storage volume mount target with `/storage`

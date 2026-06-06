@@ -21,13 +21,16 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
     private final FrontendProperties frontendProperties;
     private final WindowsOAuthLoginSession windowsOAuthLoginSession;
+    private final AndroidOAuthLoginSession androidOAuthLoginSession;
 
     public OAuth2LoginFailureHandler(
             FrontendProperties frontendProperties,
-            WindowsOAuthLoginSession windowsOAuthLoginSession
+            WindowsOAuthLoginSession windowsOAuthLoginSession,
+            AndroidOAuthLoginSession androidOAuthLoginSession
     ) {
         this.frontendProperties = frontendProperties;
         this.windowsOAuthLoginSession = windowsOAuthLoginSession;
+        this.androidOAuthLoginSession = androidOAuthLoginSession;
     }
 
     @Override
@@ -44,6 +47,17 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
             response.sendRedirect(UriComponentsBuilder.fromUriString(windowsLogin.callbackUrl())
                     .queryParam("error", "oauth_login_failed")
                     .queryParam("state", windowsLogin.state())
+                    .build(true)
+                    .toUriString());
+            return;
+        }
+
+        var androidLoginRequest = androidOAuthLoginSession.consume(request);
+        if (androidLoginRequest.isPresent()) {
+            var androidLogin = androidLoginRequest.get();
+            response.sendRedirect(UriComponentsBuilder.fromUriString(androidLogin.callbackUrl())
+                    .queryParam("error", "oauth_login_failed")
+                    .queryParam("state", androidLogin.state())
                     .build(true)
                     .toUriString());
             return;

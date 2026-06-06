@@ -25,15 +25,18 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final AuthService authService;
     private final FrontendProperties frontendProperties;
     private final WindowsOAuthLoginSession windowsOAuthLoginSession;
+    private final AndroidOAuthLoginSession androidOAuthLoginSession;
 
     public OAuth2LoginSuccessHandler(
             AuthService authService,
             FrontendProperties frontendProperties,
-            WindowsOAuthLoginSession windowsOAuthLoginSession
+            WindowsOAuthLoginSession windowsOAuthLoginSession,
+            AndroidOAuthLoginSession androidOAuthLoginSession
     ) {
         this.authService = authService;
         this.frontendProperties = frontendProperties;
         this.windowsOAuthLoginSession = windowsOAuthLoginSession;
+        this.androidOAuthLoginSession = androidOAuthLoginSession;
     }
 
     @Override
@@ -61,6 +64,20 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect(UriComponentsBuilder.fromUriString(windowsLogin.callbackUrl())
                     .queryParam("accessToken", authTokenResponse.accessToken())
                     .queryParam("state", windowsLogin.state())
+                    .build(true)
+                    .toUriString());
+            return;
+        }
+
+        var androidLoginRequest = androidOAuthLoginSession.consume(request);
+        if (androidLoginRequest.isPresent()) {
+            var androidLogin = androidLoginRequest.get();
+            response.sendRedirect(UriComponentsBuilder.fromUriString(androidLogin.callbackUrl())
+                    .queryParam("accessToken", authTokenResponse.accessToken())
+                    .queryParam("refreshToken", authTokenResponse.refreshToken())
+                    .queryParam("tokenType", authTokenResponse.tokenType())
+                    .queryParam("refreshTokenExpiresAt", authTokenResponse.refreshTokenExpiresAt())
+                    .queryParam("state", androidLogin.state())
                     .build(true)
                     .toUriString());
             return;

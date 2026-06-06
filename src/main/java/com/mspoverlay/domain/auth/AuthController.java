@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.mspoverlay.global.response.ApiResponse;
 import com.mspoverlay.global.security.AuthenticatedUser;
+import com.mspoverlay.infrastructure.oauth.AndroidOAuthLoginSession;
 import com.mspoverlay.infrastructure.oauth.WindowsOAuthLoginSession;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +27,16 @@ public class AuthController {
 
     private final AuthService authService;
     private final WindowsOAuthLoginSession windowsOAuthLoginSession;
+    private final AndroidOAuthLoginSession androidOAuthLoginSession;
 
-    public AuthController(AuthService authService, WindowsOAuthLoginSession windowsOAuthLoginSession) {
+    public AuthController(
+            AuthService authService,
+            WindowsOAuthLoginSession windowsOAuthLoginSession,
+            AndroidOAuthLoginSession androidOAuthLoginSession
+    ) {
         this.authService = authService;
         this.windowsOAuthLoginSession = windowsOAuthLoginSession;
+        this.androidOAuthLoginSession = androidOAuthLoginSession;
     }
 
     @GetMapping("/google")
@@ -52,6 +59,23 @@ public class AuthController {
         }
 
         windowsOAuthLoginSession.save(request, callbackUrl, state);
+        return ResponseEntity.status(302)
+                .location(URI.create("/oauth2/authorization/google"))
+                .build();
+    }
+
+    @GetMapping("/android/google/start")
+    @Operation(summary = "Start Google OAuth login for Android client")
+    public ResponseEntity<Void> androidGoogleLogin(
+            @RequestParam String callbackUrl,
+            @RequestParam String state,
+            HttpServletRequest request
+    ) {
+        if (!androidOAuthLoginSession.isAllowedCallbackUrl(callbackUrl) || state == null || state.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        androidOAuthLoginSession.save(request, callbackUrl, state);
         return ResponseEntity.status(302)
                 .location(URI.create("/oauth2/authorization/google"))
                 .build();

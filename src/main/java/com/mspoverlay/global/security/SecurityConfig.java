@@ -64,7 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/storage/**").permitAll()
-                        .requestMatchers("/api/auth/google", "/api/auth/windows/google/start", "/oauth2/**", "/login/**", "/api/auth/google/callback/**").permitAll()
+                        .requestMatchers("/api/auth/google", "/api/auth/windows/google/start", "/api/auth/android/google/start", "/oauth2/**", "/login/**", "/api/auth/google/callback/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/platforms", "/api/games", "/api/overlays", "/api/overlays/**").permitAll()
