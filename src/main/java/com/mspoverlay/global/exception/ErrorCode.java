@@ -20,9 +20,11 @@ public enum ErrorCode {
     OVERLAY_NOT_FOUND(HttpStatus.NOT_FOUND, "오버레이를 찾을 수 없습니다."),
     OVERLAY_JSON_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "overlay json not found"),
     LIBRARY_NOT_FOUND(HttpStatus.NOT_FOUND, "라이브러리를 찾을 수 없습니다."),
+    OVERLAY_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요를 찾을 수 없습니다."),
     OVERLAY_CODE_DUPLICATED(HttpStatus.CONFLICT, "오버레이 코드가 이미 존재합니다."),
     OVERLAY_ALREADY_SAVED(HttpStatus.CONFLICT, "이미 저장된 오버레이입니다."),
     LIBRARY_ALREADY_SAVED(HttpStatus.CONFLICT, "이미 저장한 오버레이입니다."),
+    OVERLAY_ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요한 오버레이입니다."),
     FILE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장에 실패했습니다."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");

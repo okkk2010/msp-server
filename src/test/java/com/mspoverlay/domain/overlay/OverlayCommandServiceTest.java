@@ -3,6 +3,7 @@ package com.mspoverlay.domain.overlay;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mspoverlay.domain.game.Game;
 import com.mspoverlay.domain.game.GameRepository;
+import com.mspoverlay.domain.like.OverlayLikeRepository;
 import com.mspoverlay.domain.library.UserLibraryRepository;
 import com.mspoverlay.domain.platform.Platform;
 import com.mspoverlay.domain.platform.PlatformRepository;
@@ -37,6 +38,7 @@ class OverlayCommandServiceTest {
                 mock(PlatformRepository.class),
                 mock(GameRepository.class),
                 mock(UserLibraryRepository.class),
+                mock(OverlayLikeRepository.class),
                 mock(OverlayJsonSchemaValidator.class),
                 mock(OverlayStorageService.class),
                 new ObjectMapper()
@@ -80,6 +82,7 @@ class OverlayCommandServiceTest {
                 platformRepository,
                 gameRepository,
                 userLibraryRepository,
+                mock(OverlayLikeRepository.class),
                 validator,
                 storageService,
                 new ObjectMapper()
@@ -128,6 +131,7 @@ class OverlayCommandServiceTest {
                 mock(PlatformRepository.class),
                 mock(GameRepository.class),
                 userLibraryRepository,
+                mock(OverlayLikeRepository.class),
                 mock(OverlayJsonSchemaValidator.class),
                 storageService,
                 new ObjectMapper()
@@ -152,6 +156,7 @@ class OverlayCommandServiceTest {
                 mock(PlatformRepository.class),
                 mock(GameRepository.class),
                 userLibraryRepository,
+                mock(OverlayLikeRepository.class),
                 mock(OverlayJsonSchemaValidator.class),
                 storageService,
                 new ObjectMapper()

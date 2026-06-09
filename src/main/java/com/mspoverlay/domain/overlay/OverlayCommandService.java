@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mspoverlay.domain.game.Game;
 import com.mspoverlay.domain.game.GameRepository;
+import com.mspoverlay.domain.like.OverlayLikeRepository;
 import com.mspoverlay.domain.library.UserLibraryRepository;
 import com.mspoverlay.domain.platform.Platform;
 import com.mspoverlay.domain.platform.PlatformRepository;
@@ -25,6 +26,7 @@ public class OverlayCommandService {
     private final PlatformRepository platformRepository;
     private final GameRepository gameRepository;
     private final UserLibraryRepository userLibraryRepository;
+    private final OverlayLikeRepository overlayLikeRepository;
     private final OverlayJsonSchemaValidator overlayJsonSchemaValidator;
     private final OverlayStorageService overlayStorageService;
     private final ObjectMapper objectMapper;
@@ -34,6 +36,7 @@ public class OverlayCommandService {
             PlatformRepository platformRepository,
             GameRepository gameRepository,
             UserLibraryRepository userLibraryRepository,
+            OverlayLikeRepository overlayLikeRepository,
             OverlayJsonSchemaValidator overlayJsonSchemaValidator,
             OverlayStorageService overlayStorageService,
             ObjectMapper objectMapper
@@ -42,6 +45,7 @@ public class OverlayCommandService {
         this.platformRepository = platformRepository;
         this.gameRepository = gameRepository;
         this.userLibraryRepository = userLibraryRepository;
+        this.overlayLikeRepository = overlayLikeRepository;
         this.overlayJsonSchemaValidator = overlayJsonSchemaValidator;
         this.overlayStorageService = overlayStorageService;
         this.objectMapper = objectMapper;
@@ -115,6 +119,7 @@ public class OverlayCommandService {
         validateAuthor(overlay, authenticatedUserId);
 
         userLibraryRepository.deleteAllByOverlayId(overlay.getId());
+        overlayLikeRepository.deleteAllByOverlayId(overlay.getId());
         overlayRepository.delete(overlay);
         overlayStorageService.deleteOverlayDirectory(overlay.getOverlayId());
     }

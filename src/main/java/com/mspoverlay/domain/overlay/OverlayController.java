@@ -44,6 +44,7 @@ public class OverlayController {
     @GetMapping
     @Operation(summary = "Get paged overlay list")
     public ApiResponse<PageResponse<OverlaySummaryResponse>> getOverlays(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String keyword,
@@ -52,13 +53,18 @@ public class OverlayController {
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String sort
     ) {
-        return ApiResponse.ok(overlayQueryService.getOverlays(page, size, keyword, platform, game, code, sort));
+        Long currentUserId = authenticatedUser != null ? authenticatedUser.userId() : null;
+        return ApiResponse.ok(overlayQueryService.getOverlays(page, size, keyword, platform, game, code, sort, currentUserId));
     }
 
     @GetMapping("/{overlayId}")
     @Operation(summary = "Get overlay detail by overlayId")
-    public ApiResponse<OverlayDetailResponse> getOverlayDetail(@PathVariable String overlayId) {
-        return ApiResponse.ok(overlayQueryService.getOverlayDetail(overlayId));
+    public ApiResponse<OverlayDetailResponse> getOverlayDetail(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @PathVariable String overlayId
+    ) {
+        Long currentUserId = authenticatedUser != null ? authenticatedUser.userId() : null;
+        return ApiResponse.ok(overlayQueryService.getOverlayDetail(overlayId, currentUserId));
     }
 
     @GetMapping("/code/{code}")

@@ -1,6 +1,10 @@
 package com.mspoverlay.domain.overlay;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mspoverlay.domain.like.OverlayLikeRepository;
 import com.mspoverlay.global.exception.BusinessException;
 import com.mspoverlay.global.exception.ErrorCode;
 import com.mspoverlay.global.response.PageResponse;
@@ -24,15 +29,18 @@ public class OverlayQueryService {
     private static final Pattern OVERLAY_CODE_PATTERN = Pattern.compile("^[A-Z0-9]{6}$");
 
     private final OverlayRepository overlayRepository;
+    private final OverlayLikeRepository overlayLikeRepository;
     private final OverlayStorageService overlayStorageService;
     private final ObjectMapper objectMapper;
 
     public OverlayQueryService(
             OverlayRepository overlayRepository,
+            OverlayLikeRepository overlayLikeRepository,
             OverlayStorageService overlayStorageService,
             ObjectMapper objectMapper
     ) {
         this.overlayRepository = overlayRepository;
+        this.overlayLikeRepository = overlayLikeRepository;
         this.overlayStorageService = overlayStorageService;
         this.objectMapper = objectMapper;
     }
@@ -44,7 +52,8 @@ public class OverlayQueryService {
             String platform,
             String game,
             String code,
-            String sort
+            String sort,
+            Long currentUserId
     ) {
         PageRequest pageRequest = PageRequest.of(normalizePage(page), normalizeSize(size), resolveSort(sort));
         Specification<Overlay> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -59,16 +68,29 @@ public class OverlayQueryService {
             }
         }
 
+        Page<Overlay> overlays = overlayRepository.findAll(specification, pageRequest);
+        Set<Long> likedOverlayIds = resolveLikedOverlayIds(currentUserId, overlays.getContent());
+
         return PageResponse.from(
-                overlayRepository.findAll(specification, pageRequest)
-                        .map(OverlaySummaryResponse::from)
+                overlays.map(overlay -> OverlaySummaryResponse.from(overlay, likedOverlayIds.contains(overlay.getId())))
         );
     }
 
-    public OverlayDetailResponse getOverlayDetail(String overlayId) {
-        return overlayRepository.findWithDetailsByOverlayId(overlayId)
-                .map(OverlayDetailResponse::from)
+    public OverlayDetailResponse getOverlayDetail(String overlayId, Long currentUserId) {
+        Overlay overlay = overlayRepository.findWithDetailsByOverlayId(overlayId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.OVERLAY_NOT_FOUND));
+        boolean likedByMe = currentUserId != null
+                && overlayLikeRepository.existsByUserIdAndOverlayId(currentUserId, overlay.getId());
+        return OverlayDetailResponse.from(overlay, likedByMe);
+    }
+
+    private Set<Long> resolveLikedOverlayIds(Long currentUserId, List<Overlay> overlays) {
+        if (currentUserId == null || overlays.isEmpty()) {
+            return Set.of();
+        }
+
+        List<Long> overlayIds = overlays.stream().map(Overlay::getId).toList();
+        return new HashSet<>(overlayLikeRepository.findLikedOverlayIds(currentUserId, overlayIds));
     }
 
     public OverlayCodeLoadResponse getOverlayByCode(String code) {
@@ -106,7 +128,13 @@ public class OverlayQueryService {
         if (sort.equals("updated")) {
             return Sort.by(Sort.Order.desc("updatedAt"), Sort.Order.desc("id"));
         }
-        throw new BusinessException(ErrorCode.INVALID_INPUT, "sort는 newest 또는 updated만 지원합니다.");
+        if (sort.equals("saved")) {
+            return Sort.by(Sort.Order.desc("saveCount"), Sort.Order.desc("id"));
+        }
+        if (sort.equals("likes")) {
+            return Sort.by(Sort.Order.desc("likeCount"), Sort.Order.desc("id"));
+        }
+        throw new BusinessException(ErrorCode.INVALID_INPUT, "sort는 newest, updated, saved, likes만 지원합니다.");
     }
 
     private Specification<Overlay> keywordContains(String keyword) {

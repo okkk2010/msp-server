@@ -16,6 +16,7 @@ import com.mspoverlay.global.response.PageResponse;
 import com.mspoverlay.global.exception.BusinessException;
 import com.mspoverlay.global.exception.ErrorCode;
 import com.mspoverlay.global.exception.GlobalExceptionHandler;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,7 @@ class OverlayControllerTest {
         OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
         OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
         OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
-        when(overlayQueryService.getOverlays(0, 20, "front", "windows", null, null, "newest"))
+        when(overlayQueryService.getOverlays(0, 20, "front", "windows", null, null, "newest", null))
                 .thenReturn(PageResponse.from(new PageImpl<>(
                         List.of(new OverlaySummaryResponse(
                                 1L,
@@ -44,6 +45,9 @@ class OverlayControllerTest {
                                 "minecraft",
                                 "/storage/overlays/ovl_front_dashboard_001/thumbnail.png",
                                 "Front Demo User",
+                                5L,
+                                3L,
+                                false,
                                 OffsetDateTime.parse("2026-04-19T12:00:00+09:00"),
                                 OffsetDateTime.parse("2026-04-19T12:10:00+09:00")
                         )),
@@ -72,7 +76,7 @@ class OverlayControllerTest {
         OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
         OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
         OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
-        when(overlayQueryService.getOverlayDetail(eq("ovl_front_dashboard_001")))
+        when(overlayQueryService.getOverlayDetail(eq("ovl_front_dashboard_001"), any()))
                 .thenReturn(new OverlayDetailResponse(
                         1L,
                         "ovl_front_dashboard_001",
@@ -88,6 +92,9 @@ class OverlayControllerTest {
                         "/storage/overlays/ovl_front_dashboard_001/overlay.json",
                         "/storage/overlays/ovl_front_dashboard_001/thumbnail.png",
                         new OverlayAuthorResponse(1L, "Front Demo User", "front-demo@example.com"),
+                        5L,
+                        3L,
+                        false,
                         OffsetDateTime.parse("2026-04-19T12:00:00+09:00"),
                         OffsetDateTime.parse("2026-04-19T12:10:00+09:00")
                 ));
@@ -170,7 +177,7 @@ class OverlayControllerTest {
         OverlayUploadService overlayUploadService = mock(OverlayUploadService.class);
         OverlayQueryService overlayQueryService = mock(OverlayQueryService.class);
         OverlayCommandService overlayCommandService = mock(OverlayCommandService.class);
-        when(overlayQueryService.getOverlays(null, null, null, null, null, null, null))
+        when(overlayQueryService.getOverlays(null, null, null, null, null, null, null, null))
                 .thenReturn(PageResponse.from(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0)));
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(

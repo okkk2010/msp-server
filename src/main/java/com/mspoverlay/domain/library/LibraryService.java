@@ -47,6 +47,7 @@ public class LibraryService {
         }
 
         userLibraryRepository.save(new UserLibrary(user, overlay));
+        overlay.increaseSaveCount();
     }
 
     @Transactional
@@ -54,5 +55,6 @@ public class LibraryService {
         UserLibrary userLibrary = userLibraryRepository.findByUserIdAndOverlayId(authenticatedUserId, overlayId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LIBRARY_NOT_FOUND));
         userLibraryRepository.delete(userLibrary);
+        userLibrary.getOverlay().decreaseSaveCount();
     }
 }

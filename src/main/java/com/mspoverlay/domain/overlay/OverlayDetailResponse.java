@@ -18,11 +18,18 @@ public record OverlayDetailResponse(
         String jsonPath,
         String thumbnailPath,
         OverlayAuthorResponse author,
+        long likeCount,
+        long savedCount,
+        boolean likedByMe,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
 
     public static OverlayDetailResponse from(Overlay overlay) {
+        return from(overlay, false);
+    }
+
+    public static OverlayDetailResponse from(Overlay overlay, boolean likedByMe) {
         return new OverlayDetailResponse(
                 overlay.getId(),
                 overlay.getOverlayId(),
@@ -38,6 +45,9 @@ public record OverlayDetailResponse(
                 overlay.getJsonPath(),
                 overlay.getThumbnailPath(),
                 OverlayAuthorResponse.from(overlay.getAuthorUser()),
+                overlay.getLikeCount(),
+                overlay.getSaveCount(),
+                likedByMe,
                 overlay.getCreatedAt(),
                 overlay.getUpdatedAt()
         );

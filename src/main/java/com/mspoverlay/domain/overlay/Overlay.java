@@ -77,6 +77,12 @@ public class Overlay extends BaseTimeEntity {
     @Column(name = "thumbnail_path", nullable = false, columnDefinition = "text")
     private String thumbnailPath;
 
+    @Column(name = "like_count", nullable = false)
+    private long likeCount;
+
+    @Column(name = "save_count", nullable = false)
+    private long saveCount;
+
     public Overlay(
             String overlayId,
             String code,
@@ -105,6 +111,26 @@ public class Overlay extends BaseTimeEntity {
         this.opacity = opacity;
         this.jsonPath = jsonPath;
         this.thumbnailPath = thumbnailPath;
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void increaseSaveCount() {
+        this.saveCount++;
+    }
+
+    public void decreaseSaveCount() {
+        if (this.saveCount > 0) {
+            this.saveCount--;
+        }
     }
 
     public void updateGame(Game game) {

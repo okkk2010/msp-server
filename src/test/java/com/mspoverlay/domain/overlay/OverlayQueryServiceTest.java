@@ -16,6 +16,7 @@ import com.mspoverlay.domain.game.Game;
 import com.mspoverlay.domain.platform.Platform;
 import com.mspoverlay.domain.user.OAuthProvider;
 import com.mspoverlay.domain.user.User;
+import com.mspoverlay.domain.like.OverlayLikeRepository;
 import com.mspoverlay.global.config.StorageProperties;
 import com.mspoverlay.global.exception.BusinessException;
 import com.mspoverlay.global.exception.ErrorCode;
@@ -29,7 +30,7 @@ class OverlayQueryServiceTest {
         Path storageRoot = Files.createTempDirectory("overlay-code-load-test");
         OverlayStorageService overlayStorageService = new OverlayStorageService(new StorageProperties(storageRoot.toString()));
         ObjectMapper objectMapper = new ObjectMapper();
-        OverlayQueryService service = new OverlayQueryService(overlayRepository, overlayStorageService, objectMapper);
+        OverlayQueryService service = new OverlayQueryService(overlayRepository, mock(OverlayLikeRepository.class), overlayStorageService, objectMapper);
 
         Files.createDirectories(storageRoot.resolve("overlays/ovl_001"));
         Files.writeString(
@@ -60,7 +61,7 @@ class OverlayQueryServiceTest {
     void getOverlayByCode_rejectsInvalidCodeFormat() {
         OverlayRepository overlayRepository = mock(OverlayRepository.class);
         OverlayStorageService overlayStorageService = new OverlayStorageService(new StorageProperties("storage"));
-        OverlayQueryService service = new OverlayQueryService(overlayRepository, overlayStorageService, new ObjectMapper());
+        OverlayQueryService service = new OverlayQueryService(overlayRepository, mock(OverlayLikeRepository.class), overlayStorageService, new ObjectMapper());
 
         assertThatThrownBy(() -> service.getOverlayByCode("ab-12"))
                 .isInstanceOf(BusinessException.class)

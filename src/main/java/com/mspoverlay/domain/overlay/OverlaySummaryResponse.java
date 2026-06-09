@@ -12,11 +12,18 @@ public record OverlaySummaryResponse(
         String game,
         String thumbnailPath,
         String authorName,
+        long likeCount,
+        long savedCount,
+        boolean likedByMe,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
 
     public static OverlaySummaryResponse from(Overlay overlay) {
+        return from(overlay, false);
+    }
+
+    public static OverlaySummaryResponse from(Overlay overlay, boolean likedByMe) {
         return new OverlaySummaryResponse(
                 overlay.getId(),
                 overlay.getOverlayId(),
@@ -27,6 +34,9 @@ public record OverlaySummaryResponse(
                 overlay.getGame() != null ? overlay.getGame().getSlug() : null,
                 overlay.getThumbnailPath(),
                 overlay.getAuthorUser().getName(),
+                overlay.getLikeCount(),
+                overlay.getSaveCount(),
+                likedByMe,
                 overlay.getCreatedAt(),
                 overlay.getUpdatedAt()
         );
